@@ -1,0 +1,114 @@
+"""
+The Knight Tour Problem
+
+If a Knight wants to visit all of the positions on a chess boar exactly once,
+what will the order of its moves be?
+
+This program was made in efforts of working with the backtracking substitution algorithm.
+
+"""
+# Takes an input from the user to determine the size of the chess board they desire.
+print("Enter the size of the chess board you wish to test below!")
+size = int(input("Size of board: "))
+
+"""
+isValid(x, y, board)
+
+This function takes an input of an x position, a y position, and the current board.
+If the given position is a valid move, then the function returns the board with the
+new position added. If it isn't, then the function returns false. The function checks
+whether or not the (x,y) position is on the board, as well as whether it has been visited
+in the past. 
+
+Contract
+isValid: Int Int Board -> (anyOf False Board)
+"""
+
+
+def isValid(x, y, board):
+    if (x >= 0 and y >= 0 and x < size and y < size and board[x][y] == -1):
+        return True
+    return False
+
+
+"""
+outputFinal(board)
+
+This function takes an input of the finished chess board in the form of a matrix with
+all of the moves for the night within it. The function outputs the matrix in an easy to
+read fashion.
+"""
+
+
+def outputFinal(board):
+    for i in range(size):
+        for j in range(size):
+            print(board[i][j], end=' ')
+        print()
+
+
+"""
+initializeSolve()
+
+This function initializes the parameters for findNextMove, runs that function, and then 
+gives the output of the recursion results.
+"""
+
+
+def initializeSolve():
+    # The Possible Knight moves. North is positive, East is positive.
+    moveX = [2, 1, -1, -2, -2, -1, 1, 2]
+    moveY = [1, 2, 2, 1, -1, -2, -2, -1]
+
+    # The initial board. All of the empty spaces are represented by a 0.
+    board = [[-1 for i in range(size)] for i in range(size)]
+
+    # The initial position. (The 1st position within the final output)
+    print("Enter the x coordinate you wish the knight to start at.")
+    x_pos = int(input("X-Position: "))
+    print("Enter the y coordinate you wish the knight to start at.")
+    y_pos = int(input("Y-Position: "))
+
+    board[x_pos][y_pos] = 0
+
+    # Calling the findNextMove function, beginning to look for the first move of the Knight.
+    if not findNextMove(x_pos, y_pos, moveX, moveY, board, 1):
+        print("Solution does not exist")
+    else:
+        outputFinal(board)
+
+
+""" 
+findNextMove(cur-x, cur-y, move-x, move-y, cur-board, movesSoFar)
+
+This function takes an input of the current x and y position, as well as the movements
+in the x and y position that the algorithm will try for the Knight. It also takes in the
+current board and the number of moves so far. The function tests each of the possible moves
+for the Knight, and if none of them work then the function uses backtracking to remove the
+previous move and recurse throughout the remainder of the possible moves. 
+
+Contract:
+findNextMove: Int Int Int Int Board Int -> (anyOf False Board)
+"""
+
+
+def findNextMove(curX, curY, moveX, moveY, board, nextMove):
+    if (nextMove == size ** 2):
+        return True
+
+    # try all moves
+    for index in range(8):
+        nextX = curX + moveX[index]
+        nextY = curY + moveY[index]
+        if isValid(nextX, nextY, board):
+            board[nextX][nextY] = nextMove
+            if findNextMove(nextX, nextY, moveX, moveY, board, nextMove + 1):
+                return True
+
+            # Backtracking
+            board[nextX][nextY] = -1
+    return False
+
+
+
+initializeSolve()
